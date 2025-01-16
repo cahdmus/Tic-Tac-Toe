@@ -31,6 +31,7 @@ const PlayGame = (function () {
         const gameboard = [];
 
         const boardSize = 3;
+
         const createBoard = (function () {
             function getTilePosition(tile) {
                 function getRow(input) {
@@ -48,16 +49,82 @@ const PlayGame = (function () {
                 return { row, column }
             }
 
-            function createTile(id, owner, row, column) {
-                return { id: id, owner: owner, isAvailable: true, row: row, column: column }
+            // diagonal stuff
+            const diagonalCoordonates = (function () {
+
+                let numOfTiles = boardSize;
+
+                const createDiag1 = (function () {
+                    let diagTiles = [];
+                    let row = 1;
+                    let col = 1;
+
+                    while (row <= numOfTiles) {
+                        diagTiles.push([row, col]);
+                        col++;
+                        row++;
+                    }
+
+                    return diag1 = diagTiles;
+                })();
+
+                const createDiag2 = (function () {
+                    let diagTiles = [];
+                    let row = numOfTiles;
+                    let col = 1;
+
+                    while (row >= 1) {
+                        diagTiles.push([row, col]);
+                        col++;
+                        row--;
+                    }
+
+                    return diag2 = diagTiles;
+                })();
+
+                return { diag1, diag2 }
+            })();
+
+            function isOnDiag(row, col) {
+                let tileCoordonates = [row, col];
+                let diag1 = diagonalCoordonates.diag1;
+                let diag2 = diagonalCoordonates.diag2;
+                let value = []
+
+
+                diag1.forEach(coordinates => {
+                    if (coordinates.toString() == tileCoordonates.toString()) {
+                        value.push(1)
+                    }
+                });
+
+                diag2.forEach(coordinates => {
+                    if (coordinates.toString() == tileCoordonates.toString()) {
+                        value.push(2)
+                    }
+                });
+
+                if (value.length === 0) {
+                    return false
+                } else {
+                    return value;
+                }
+            };
+
+            function createTile(id, owner, row, column, diagonal) {
+                return { id: id, owner: owner, isAvailable: true, row: row, column: column, isOnDiag: diagonal }
             }
 
             let i = 0;
             while (i < boardSize * boardSize) {
-                gameboard.push(createTile(i + 1, "free", getTilePosition(i + 1).row, getTilePosition(i + 1).column));
+                let row = getTilePosition(i + 1).row;
+                let col = getTilePosition(i + 1).column;
+
+                gameboard.push(createTile(i + 1, "free", row, col, isOnDiag(row, col)));
                 i++;
             }
 
+            // console.table(gameboard);
         })();
 
         return {
@@ -119,16 +186,26 @@ const PlayGame = (function () {
                     let playerTileLine;
                     let streak = 0;
 
+                    board.forEach((tile) => { // I take a tile
 
-                    board.forEach((tile) => {
-                        if (line === "row") {
+                        if (line === "row") { // I look at the tile in its row
                             boardTileLine = tile.row;
                             playerTileLine = playerTile.row;
-                        } else if (line === "column") {
+                        } else if (line === "column") { // I look at the tile in its column
                             boardTileLine = tile.column;
                             playerTileLine = playerTile.column;
+                        } else if (line === "diag1" || line === "diag2") {  // I look at the tile in its diagonal
+                            if (tile.isOnDiag === false) { // Is the tile on a diagonal ?
+                                return false
+                            } else if (tile.isOnDiag.includes(1)) {
+                                boardTileLine = 1;
+                                playerTileLine = 1;
+                            } else if (tile.isOnDiag.includes(2)) {
+                                boardTileLine = 2;
+                                playerTileLine = 2;
+                            }
                         }
-                        
+
                         if (boardTileLine === playerTileLine) {
                             if (tile.owner === player) {
                                 streak++;
@@ -139,7 +216,10 @@ const PlayGame = (function () {
                     return (streak === 3) ? true : false;
                 };
 
-                return (isLineWon("row") === true) || (isLineWon("column") === true) ? true : false;
+                return (isLineWon("row") === true) ||
+                    (isLineWon("column") === true) ||
+                    (isLineWon("diag1") === true) ||
+                    (isLineWon("diag2") === true) ? true : false;
             })();
 
             return {
