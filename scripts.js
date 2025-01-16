@@ -213,7 +213,7 @@ const PlayGame = (function () {
                         }
                     })
 
-                    return (streak === 3) ? true : false;
+                    return (streak === Gameboard.boardSize) ? true : false;
                 };
 
                 return (isLineWon("row") === true) ||
@@ -232,7 +232,6 @@ const PlayGame = (function () {
             winnerName = playTurn.player;
         }
     }
-
 
     // End of PlayGame
     return {
