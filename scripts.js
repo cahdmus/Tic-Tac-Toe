@@ -49,7 +49,7 @@ const PlayGame = (function () {
                 return { row, column }
             }
 
-            // diagonal stuff
+            // Get diagonal informations
             const diagonalCoordonates = (function () {
 
                 let numOfTiles = boardSize;
@@ -111,6 +111,7 @@ const PlayGame = (function () {
                 }
             };
 
+            // Create Tile
             function createTile(id, owner, row, column, diagonal) {
                 return { id: id, owner: owner, isAvailable: true, row: row, column: column, isOnDiag: diagonal }
             }
@@ -123,9 +124,10 @@ const PlayGame = (function () {
                 gameboard.push(createTile(i + 1, "free", row, col, isOnDiag(row, col)));
                 i++;
             }
-
-            // console.table(gameboard);
         })();
+
+
+
 
         return {
             gameboard,
@@ -150,8 +152,43 @@ const PlayGame = (function () {
 
             // Where is the player placing their token
             const PlayerChoice = (function () {
-                const index = parseInt(prompt('Where do you want to play ?', 'number from 1 to 9'));
-                const tile = Gameboard.gameboard[index - 1];
+
+
+
+
+
+
+
+
+
+
+
+
+                // PLAYER INPUT GOES HERE !!!
+                // DOM stuff
+                
+
+                    const gameboard = document.querySelector("#gameboard");
+                    const tiles = gameboard.querySelectorAll(".tile");
+                    let index;
+
+                    tiles.forEach((tile) => tile.addEventListener("click", function () {
+                        console.log(this.id);
+                        index = this.id;
+                    }))
+
+
+
+
+
+
+
+
+
+
+
+                // const index = parseInt(prompt('Where do you want to play ?', 'number from 1 to 9'));
+                const tile = Gameboard.gameboard[index];
 
                 return { getTile: () => tile }
             })();
@@ -238,6 +275,5 @@ const PlayGame = (function () {
         getWinner: () => getWinnerName(),
     }
 })();
-
 
 console.log(`The winner is : ${PlayGame.getWinner()}`);

@@ -1,0 +1,12 @@
+#gameboard {
+    background-color: beige;
+    margin: auto;
+    width: 60%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.tile {
+    background-color: rgb(204, 204, 177);
+    margin: 1rem;
+}
