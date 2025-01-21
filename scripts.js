@@ -1,278 +1,137 @@
 const PlayGame = (function () {
+    
+    // Creating the board
+    const gameboard = {
 
-    let winnerName = "";
-    const getWinnerName = () => winnerName;
+        tiles: [],
+        init() {
+            this.cacheDom();
+            this.createBoard();
+            this.updateBoard();
+        },
+        cacheDom() {
+            this.gameboard = document.querySelector('#gameboard');
+            this.board = document.querySelector('#board');
+            this.button = document.querySelector('#setBoardSize');
+            this.input = document.querySelector('input');
+        },
+        getBoardSize() {
+            return (this.input.value.length === 0) ? this.input.placeholder
+                : this.input.value;
+        },
+        setGridSize(boardSize) {
+            this.board.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`
+        },
+        setTileData(id, owner) {
+            return { id: id, owner: owner, isAvailable: true }
+        },
+        createTiles() {
+            this.tiles.forEach((tile) => {
+                let owner = tile.owner;
+                let id = tile.id;
 
-    // Players
-    const Players = (function () {
-
-        const players = [];
-
-        function createPlayer(name, token) {
-            let player = { name: name, token: token }
-            players.push(player);
-        }
-
-        // A remettre après !!!
-        //createPlayer(prompt('Name of Player 1','type name'), 'X');
-        //createPlayer(prompt('Name of Player 1','type name'), 'O');
-
-        // En attendant
-        createPlayer("Kylo", 'X');
-        createPlayer("Ren", 'O');;
-
-        return { players }
-    })();
-
-
-    // Board
-    const Gameboard = (function () {
-
-        const gameboard = [];
-
-        const boardSize = 3;
-
-        const createBoard = (function () {
-            function getTilePosition(tile) {
-                function getRow(input) {
-                    return Math.ceil(input / boardSize);
-                }
-
-                function getColumn(input) {
-                    let result = input % boardSize;
-                    return (result === 0) ? boardSize : result;
-                }
-
-                let row = getRow(tile);
-                let column = getColumn(tile);
-
-                return { row, column }
-            }
-
-            // Get diagonal informations
-            const diagonalCoordonates = (function () {
-
-                let numOfTiles = boardSize;
-
-                const createDiag1 = (function () {
-                    let diagTiles = [];
-                    let row = 1;
-                    let col = 1;
-
-                    while (row <= numOfTiles) {
-                        diagTiles.push([row, col]);
-                        col++;
-                        row++;
-                    }
-
-                    return diag1 = diagTiles;
-                })();
-
-                const createDiag2 = (function () {
-                    let diagTiles = [];
-                    let row = numOfTiles;
-                    let col = 1;
-
-                    while (row >= 1) {
-                        diagTiles.push([row, col]);
-                        col++;
-                        row--;
-                    }
-
-                    return diag2 = diagTiles;
-                })();
-
-                return { diag1, diag2 }
-            })();
-
-            function isOnDiag(row, col) {
-                let tileCoordonates = [row, col];
-                let diag1 = diagonalCoordonates.diag1;
-                let diag2 = diagonalCoordonates.diag2;
-                let value = []
-
-
-                diag1.forEach(coordinates => {
-                    if (coordinates.toString() == tileCoordonates.toString()) {
-                        value.push(1)
-                    }
-                });
-
-                diag2.forEach(coordinates => {
-                    if (coordinates.toString() == tileCoordonates.toString()) {
-                        value.push(2)
-                    }
-                });
-
-                if (value.length === 0) {
-                    return false
-                } else {
-                    return value;
-                }
-            };
-
-            // Create Tile
-            function createTile(id, owner, row, column, diagonal) {
-                return { id: id, owner: owner, isAvailable: true, row: row, column: column, isOnDiag: diagonal }
-            }
-
+                tile = document.createElement('div');
+                tile.id = id;
+                tile.classList.add('tile');
+                tile.innerHTML = owner;
+                this.board.appendChild(tile);
+            })
+        },
+        createBoard() {
+            let boardSize = this.getBoardSize();
             let i = 0;
-            while (i < boardSize * boardSize) {
-                let row = getTilePosition(i + 1).row;
-                let col = getTilePosition(i + 1).column;
 
-                gameboard.push(createTile(i + 1, "free", row, col, isOnDiag(row, col)));
+            while (i < boardSize * boardSize) {
+                this.tiles.push(this.setTileData(i + 1, "free"));
                 i++;
             }
-        })();
-
-
-
-
-        return {
-            gameboard,
-            boardSize,
-        }
-    })();
-
-    // Turn
-    let turn = 0;
-    while (winnerName.length === 0) {
-
-        const playTurn = (function () {
-            // Who's turn is it ? (TurnPlayer.getName())
-            const PlayerTurn = (function () {
-                const isOdd = number => number % 2 !== 0;
-                const player = (isOdd(turn) === false) ? Players.players[0] : Players.players[1];
-                const getPlayerName = () => player.name;
-
-                return { getName: () => getPlayerName() }
-            })();
-
-
-            // Where is the player placing their token
-            const PlayerChoice = (function () {
-
-
-
-
-
-
-
-
-
-
-
-
-                // PLAYER INPUT GOES HERE !!!
-                // DOM stuff
-                
-
-                    const gameboard = document.querySelector("#gameboard");
-                    const tiles = gameboard.querySelectorAll(".tile");
-                    let index;
-
-                    tiles.forEach((tile) => tile.addEventListener("click", function () {
-                        console.log(this.id);
-                        index = this.id;
-                    }))
-
-
-
-
-
-
-
-
-
-
-
-                // const index = parseInt(prompt('Where do you want to play ?', 'number from 1 to 9'));
-                const tile = Gameboard.gameboard[index];
-
-                return { getTile: () => tile }
-            })();
-
-
-            // Changing ownership of a tile
-            const PlaceToken = (function () {
-                const tile = PlayerChoice.getTile();
-                const playerName = PlayerTurn.getName();
-
-                if (tile.isAvailable === true) {
-                    tile.owner = playerName;
-                    tile.isAvailable = false;
-                    turn++;
-
-                    return tile;
-                }
-            })();
-
-
-            // Check winner
-            const isWin = (function () {
-
-                const board = Gameboard.gameboard;
-                const playerTile = PlayerChoice.getTile();
-                const player = PlayerTurn.getName();
-
-                console.table(board);
-
-                function isLineWon(line) {
-                    let boardTileLine;
-                    let playerTileLine;
-                    let streak = 0;
-
-                    board.forEach((tile) => { // I take a tile
-
-                        if (line === "row") { // I look at the tile in its row
-                            boardTileLine = tile.row;
-                            playerTileLine = playerTile.row;
-                        } else if (line === "column") { // I look at the tile in its column
-                            boardTileLine = tile.column;
-                            playerTileLine = playerTile.column;
-                        } else if (line === "diag1" || line === "diag2") {  // I look at the tile in its diagonal
-                            if (tile.isOnDiag === false) { // Is the tile on a diagonal ?
-                                return false
-                            } else if (tile.isOnDiag.includes(1)) {
-                                boardTileLine = 1;
-                                playerTileLine = 1;
-                            } else if (tile.isOnDiag.includes(2)) {
-                                boardTileLine = 2;
-                                playerTileLine = 2;
-                            }
-                        }
-
-                        if (boardTileLine === playerTileLine) {
-                            if (tile.owner === player) {
-                                streak++;
-                            }
-                        }
-                    })
-
-                    return (streak === Gameboard.boardSize) ? true : false;
-                };
-
-                return (isLineWon("row") === true) ||
-                    (isLineWon("column") === true) ||
-                    (isLineWon("diag1") === true) ||
-                    (isLineWon("diag2") === true) ? true : false;
-            })();
-
-            return {
-                playerWon: isWin,
-                player: PlayerTurn.getName()
-            }
-        })();
-
-        if (playTurn.playerWon === true) {
-            winnerName = playTurn.player;
+            this.createTiles();
+            this.setGridSize(boardSize);
+        },
+        removeTiles() {
+            this.tiles = [];
+            this.board.innerHTML = '';
+        },
+        updateBoard() {
+            this.button.addEventListener('click', () => {
+                this.removeTiles();
+                this.createBoard();
+            })
         }
     }
 
-    // End of PlayGame
+
+    // Creating the players
+    const players = {
+        players: [],
+        tokens: [
+            { name: "X" },
+            { name: "O" } // isAvailable: true / for later
+        ],
+        init() {
+            this.players.push(this.createPlayer());
+            this.players.push(this.createPlayer());
+        },
+        createPlayer() {
+            return { name: this.getPlayerName(), token: this.getPlayerToken() }
+        },
+        getPlayerName() {
+            // Because I can't be bothered to fill it every time
+            return (this.players.length === 0) ? "Kylo" : "Ren";
+            // return prompt('Name of Player','type name')
+        },
+        getPlayerToken() {
+            // At some point players will be able to pick their token
+            return (this.players.length === 0) ? this.tokens[0] : this.tokens[1];
+        }
+    }
+
+
+    // Rules of a Turn 
+    const playTurn = {
+        turn: 0,
+        board: gameboard.tiles,
+        players: players.players,
+        init() {
+            this.getTurnPlayerName();
+            this.getPlayerChoice();
+            this.PlaceToken();
+            this.CheckWinner();
+            this.turn++ // Is that a thing ? I'm tired
+
+            // console.log(this.board);
+            // console.log(this.players);
+        },
+        getTurnPlayerName() {
+
+        },
+        getPlayerChoice() {
+
+        },
+        PlaceToken() {
+
+        },
+        CheckWinner() {
+
+        }
+    }
+
+    
+    // Playing the game
+    gameboard.init();
+    players.init();
+    let winnerName = "";
+    let turn = 0;
+
+    // Next line is here while I make tests
+    while (turn <= 2) {
+    // while (winnerName.length === 0) {
+        playTurn.init();
+        turn++ // This is only here for now
+    }
+
     return {
-        getWinner: () => getWinnerName(),
+        getWinner: () => winnerName,
     }
 })();
 
