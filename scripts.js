@@ -7,14 +7,16 @@ const PlayGame = (function () {
         init() {
             this.cacheDom();
             this.createBoard();
-            this.updateBoard();
+            this.reset();
         },
         cacheDom() {
             this.gameboard = document.querySelector('#gameboard');
             this.board = document.querySelector('#board');
             this.boardTiles = document.querySelectorAll('.tile');
-            this.button = document.querySelector('#setBoardSize');
+            this.boardSizeBtn = document.querySelector('#setBoardSize');
             this.input = document.querySelector('input');
+            this.resetBtn = document.querySelector('#resetBtn');
+            this.buttons = document.querySelectorAll('button');
         },
         getBoardSize() {
             return (this.input.value.length === 0) ? this.input.placeholder
@@ -101,12 +103,14 @@ const PlayGame = (function () {
             this.tiles = [];
             this.board.innerHTML = '';
         },
-        updateBoard() {
-            this.button.addEventListener('click', () => {
-                this.removeTiles();
-                this.init();
+        reset() {
+            this.buttons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    this.removeTiles();
+                    startGame.init()
+                })
             })
-        },
+        }
     }
 
 
@@ -135,15 +139,16 @@ const PlayGame = (function () {
         }
     }
 
-    
+
     // Declare a winner
     const checkWinner = {
-        board: gameboard.tiles,
+        board,
         init(player, tile) {
+            this.board = gameboard.tiles;
             return (this.checkLine('row', tile, player) === true ||
-                    this.checkLine('col', tile, player) === true ||
-                    this.checkLine('diag1', tile, player) === true ||
-                    this.checkLine('diag2', tile, player) === true) ? player : "";
+                this.checkLine('col', tile, player) === true ||
+                this.checkLine('diag1', tile, player) === true ||
+                this.checkLine('diag2', tile, player) === true) ? player : "";
         },
         getLine(line, tile) {
             switch (line) {
@@ -176,11 +181,12 @@ const PlayGame = (function () {
 
     // Rules of a Turn 
     const playTurn = {
-        board: gameboard.tiles,
         players: players.players,
-        turn:0,
+        board,
+        turn: 0,
         winnerName: '',
         init() {
+            this.reset();
             this.getPlayerChoice(this.turn);
         },
         getTurnPlayerName() {
@@ -211,13 +217,40 @@ const PlayGame = (function () {
         announceWinner() {
             let message = `the winner is ${this.winnerName}`;
             return (this.winnerName.length > 0) ? alert(message) : false;
+        },
+        reset() {
+            this.board = gameboard.tiles;
+
+            this.turn = 0;
+            this.winnerName = '';
         }
     }
 
 
     // Playing the game
-    gameboard.init();
+    const startGame = {
+        init() {
+            gameboard.init();
+            playTurn.init();
+        }
+    }
+
     players.init();
-    playTurn.init();
+    startGame.init();
+
+    // The thing is... you can play once. BUT it keeps playing after the alert which is not ideal.
+    // And also and this is worth, the set size and reset button do not work. The reset button does
+    // something that's for sure, but what ??? Who knows. I know it adds more players. It should not
+    // I'm pretty sure the turns are fucked also.
+    // Maybe it's something to do with checkWinner ? I know the issues lies mostly in playTurn
+    // who is the bane of my existence anyway.
+    // Also playturn alerts the winner before it changes the text of the tile, which is not the end
+    // of the world but you know... 
+
+    // Ok so the tiles were marked as unavailable after the reset, but now it's fixed, the last thing
+    // is that the player can win seemingly randomly after a reset (or after one win)
+    // And it looks like checkWin doesn't work after a resize so the problem is here
+
+    // Ok it's working
 
 })();

@@ -8,8 +8,8 @@ body {
     align-items: center;
 }
 
-#boardSize {
-    margin-bottom: 2rem;
+#boardSize, #resetBtn {
+    margin: 1rem;
 }
 
 #board {
