@@ -1,38 +1,291 @@
+/*
+    TIC TAC TOE (the odin project)
+    by Cahdmus
+
+    Table of Contents:
+        GENERAL
+            shadows
+        HEADER
+        GAMEBOARD
+            general
+            popup
+            players
+            board
+        FOOTER
+*/
+
+/* GENERAL
+----------------------------------------------- */
+@import url(https://fonts.bunny.net/css?family=abel:400|abril-fatface:400|audiowide:400);
+
+:root {
+    --background-color: hsl(38, 66%, 83%);
+    --secondary-background-color: hsl(35, 94%, 94%);
+    --accent-color: hsl(23, 78%, 55%);
+    --secondary-accent-color: hsl(40, 48%, 53%);
+    --font-color: hsl(86, 33%, 19%);
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    /* border: 1px dotted red; */
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
-}
-
-#gameboard {
+    background-color: var(--background-color);
+    font-family: 'Abel', sans-serif;
+    color: var(--font-color);
     display: flex;
     flex-direction: column;
-    align-items: center;
-}
-
-#boardSize, #resetBtn {
-    margin: 1rem;
-}
-
-#board {
-    background-color: beige;
-    margin: auto;
-    width: fit-content;
-    display: grid;
-    gap: 1rem;
-    padding: 1rem;
-}
-
-.tile {
-    background-color: rgb(204, 204, 177);
-    padding: 2rem;
-    aspect-ratio: 1 / 1;
-    text-align: center;
-    vertical-align: middle;
-}
-
-.tile:hover {
-    background-color: whitesmoke;
 }
 
 h1 {
     text-align: center;
 }
+
+h2 {
+    color: var(--accent-color);
+    font-size: 1rem;
+    margin-top: .5rem;
+}
+
+a {
+    color: var(--background-color);
+    text-transform: uppercase;
+    letter-spacing: .1rem;
+    text-decoration: none;
+}
+
+input {
+    background-color: var(--secondary-background-color);
+    border: 1px solid var(--secondary-accent-color);
+    padding: .8rem 1rem;
+    border-radius: 20px;
+    text-align: end;
+    width: 5rem;
+}
+
+button {
+    border: none;
+    background-color: var(--secondary-accent-color);
+    color: var(--secondary-background-color);
+    padding: .5rem 1rem;
+    font-family: 'Abel', sans-serif;
+    text-transform: uppercase;
+    border-radius: 15px;
+}
+
+
+    /* shadows
+    ------------------------ */
+input, button:hover, #board {
+    -webkit-box-shadow: inset 0px 3px 24px -8px rgba(145, 112, 67, 0.2);
+    -moz-box-shadow: inset 0px 3px 24px -8px rgba(145, 112, 67, 0.2);
+    box-shadow: inset 0px 3px 24px -8px rgba(145, 112, 67, 0.2);
+}
+button, .tile, .box {
+    -webkit-box-shadow: 0px 3px 24px -8px rgba(145, 112, 67, .4);
+    -moz-box-shadow: 0px 3px 24px -8px rgba(145, 112, 67, .4);
+    box-shadow: 0px 3px 24px -8px rgba(145, 112, 67, .4);
+}
+header {
+    -webkit-box-shadow: 0px 3px 24px -8px rgba(145, 112, 67, .6);
+    -moz-box-shadow: 0px 3px 24px -8px rgba(145, 112, 67, .6);
+    box-shadow: 0px 3px 24px -8px rgba(145, 112, 67, .6);
+}
+
+
+/* HEADER
+----------------------------------------------- */
+header {
+    background-color: var(--font-color);
+    font-family: 'Abril Fatface', display;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    letter-spacing: -.1rem;
+    word-spacing: .8rem;
+    padding: .4rem;
+}
+
+header>h1>span {
+    color: var(--secondary-background-color);
+}
+
+
+/* GAMEBOARD - MAIN CONTENT
+----------------------------------------------- */
+
+    /* general
+    ------------------------ */
+#gameboard {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#boardSize,
+#resetBtn {
+    margin: 1rem;
+}
+
+.box {
+    border-radius: 15px;
+    padding: 1rem;
+    background-color: var(--secondary-background-color);
+    margin: 2rem;
+    font-family: 'Audiowide', display;
+    text-transform: uppercase;
+    height: fit-content;
+}
+
+main {
+    display: flex;
+    gap: 1rem;
+}
+
+
+    /* general
+    ------------------------ */
+#popup {
+    margin: auto;
+    width: 30%;
+    z-index: 2;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: var(--secondary-background-color);
+    opacity: 60%;
+}
+
+
+    /* players
+    ------------------------ */
+#players {
+    display: flex;
+    justify-content: space-around;
+}
+
+.playerToken {
+    border-radius: 10px;
+}
+
+#player1>.playerToken {
+    background-color: var(--accent-color);
+}
+
+#player2>.playerToken {
+    background-color: var(--secondary-accent-color);
+}
+
+.playerInfo>p {
+    color: var(--secondary-accent-color);
+}
+
+.playerInfo {
+    padding: .5rem;
+}
+
+
+    /* board
+    ------------------------ */
+#board {
+    background-color: var(--secondary-accent-color);
+    border-radius: 20px;
+    margin: auto;
+    width: fit-content;
+    display: grid;
+    gap: .3rem;
+    padding: .5rem;
+}
+
+.tile {
+    background-color: var(--secondary-background-color);
+    padding: 2.5rem;
+    aspect-ratio: 1 / 1;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 15px;
+}
+
+.tile:hover {
+    background-color: var(--background-color);
+}
+
+
+/* FOOTER
+----------------------------------------------- */
+footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 1.5rem;
+}
+
+footer>#credit {
+    position: relative;
+    display: flex;
+    height: 4rem;
+}
+
+footer>#credit>img {
+    border-radius: 100%;
+}
+
+footer>#credit>.grow {
+    background-color: var(--secondary-accent-color);
+    border-radius: 50px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+
+/* footer>#credit {
+    position: relative;
+    background-color: var(--secondary-accent-color);
+    border-radius: 30px;
+}
+
+footer>#credit:hover {
+}
+
+footer>#credit>img {
+    border-radius: 100%;
+    position: absolute; 
+    top: 0; 
+    left: 0;
+    z-index: 1;
+}
+
+footer>#credit>.grow {
+    position: absolute; 
+    top: 0; 
+    left: 0;
+    z-index: 0;
+} */
+
+/* .swell {
+    transition: all .2s ease-in-out;
+}
+
+.swell:hover {
+    transform: scale(1.1);
+} */

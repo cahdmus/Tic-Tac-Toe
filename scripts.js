@@ -17,12 +17,17 @@ const PlayGame = (function () {
             this.input = document.querySelector('input');
             this.resetBtn = document.querySelector('#resetBtn');
             this.buttons = document.querySelectorAll('button');
+            this.player1DisplayName = document.querySelector('#player1').querySelector('h2');
+            this.player1DisplayScore = document.querySelector('#player1').querySelector('span');
+            this.player2DisplayName = document.querySelector('#player2').querySelector('h2');
+            this.player2DisplayScore = document.querySelector('#player2').querySelector('span');
         },
         getBoardSize() {
             return (this.input.value.length === 0) ? this.input.placeholder
                 : this.input.value;
         },
         setGridSize(boardSize) {
+            // set max of 12 or something
             this.board.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`
         },
         isOnRow(tile) {
@@ -88,7 +93,7 @@ const PlayGame = (function () {
 
             while (i < boardSize * boardSize) {
                 this.tiles.push(this.setTileData(i + 1,
-                    "free",
+                    "",
                     this.getTilePosition(i + 1).row,
                     this.getTilePosition(i + 1).col,
                     this.getTilePosition(i + 1).diag1,
@@ -124,9 +129,10 @@ const PlayGame = (function () {
         init() {
             this.players.push(this.createPlayer());
             this.players.push(this.createPlayer());
+            this.displayPlayers();
         },
         createPlayer() {
-            return { name: this.getPlayerName(), token: this.getPlayerToken() }
+            return { name: this.getPlayerName(), token: this.getPlayerToken(), score: 0 }
         },
         getPlayerName() {
             // Because I can't be bothered to fill it every time
@@ -136,6 +142,13 @@ const PlayGame = (function () {
         getPlayerToken() {
             // At some point players will be able to pick their token
             return (this.players.length === 0) ? this.tokens[0] : this.tokens[1];
+        },
+        displayPlayers() {
+            gameboard.cacheDom();
+            gameboard.player1DisplayName.textContent = this.players[0].name;
+            gameboard.player1DisplayScore.textContent = this.players[0].score;
+            gameboard.player2DisplayName.textContent = this.players[1].name;
+            gameboard.player2DisplayScore.textContent = this.players[1].score;
         }
     }
 
@@ -194,7 +207,8 @@ const PlayGame = (function () {
             return (isOdd(this.turn) === false) ? this.players[0] : this.players[1];
         },
         placeToken(tile, turn) {
-            const playerName = this.getTurnPlayerName(turn).name;
+            const player = this.getTurnPlayerName(turn);
+            const playerName = player.name;
             const index = tile.id - 1;
 
             if (tile.isAvailable === true) {
@@ -214,7 +228,9 @@ const PlayGame = (function () {
                 })
             })
         },
-        announceWinner() {
+        announceWinner(turnPayer) {
+            // const playerScore = turnPlayer.score;
+            // playerScore++;
             let message = `the winner is ${this.winnerName}`;
             return (this.winnerName.length > 0) ? alert(message) : false;
         },
@@ -237,20 +253,5 @@ const PlayGame = (function () {
 
     players.init();
     startGame.init();
-
-    // The thing is... you can play once. BUT it keeps playing after the alert which is not ideal.
-    // And also and this is worth, the set size and reset button do not work. The reset button does
-    // something that's for sure, but what ??? Who knows. I know it adds more players. It should not
-    // I'm pretty sure the turns are fucked also.
-    // Maybe it's something to do with checkWinner ? I know the issues lies mostly in playTurn
-    // who is the bane of my existence anyway.
-    // Also playturn alerts the winner before it changes the text of the tile, which is not the end
-    // of the world but you know... 
-
-    // Ok so the tiles were marked as unavailable after the reset, but now it's fixed, the last thing
-    // is that the player can win seemingly randomly after a reset (or after one win)
-    // And it looks like checkWin doesn't work after a resize so the problem is here
-
-    // Ok it's working
 
 })();

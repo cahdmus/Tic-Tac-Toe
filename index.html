@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,17 +12,60 @@
 </head>
 
 <body>
-    <h1>Tic Tac Toe</h1>
+    <header>
+        <h1>Tic <span>Tac</span> Toe</h1>
+    </header>
+
+    <!-- <div id="popup" class="box">
+        <h1>Player One</h1>
+        <p>Enter name</p>
+        <input placeholder="name" type="text">
+        <p>Select a token</p>
+        <button id="setBoardSize">Confirm player</button>
+    </div> -->
+    <!-- <div class="overlay"></div> -->
+
     <div id="gameboard">
         <div id="boardSize">
             <input placeholder="3" type="text">
             <button id="setBoardSize">Set Size</button>
         </div>
 
-        <div id="board"></div>
+        <main>
+            <div id="player1" class="box">
+                <div class="playerToken">
+                    <img src="images/tokens/token (12).svg">
+                </div>
+                <div class="playerInfo">
+                    <h2>Player Name</h2>
+                    <p>Score - <span>00</span></p>
+                </div>
+            </div>
+
+            <div id="board"></div>
+
+            <div id="player2" class="box">
+                <div class="playerToken">
+                    <img src="images/tokens/token (1).svg">
+                </div>
+                <div class="playerInfo">
+                    <h2>Player Name</h2>
+                    <p>Score - <span>00</span></p>
+                </div>
+            </div>
+        </main>
 
         <button id="resetBtn">Reset</button>
     </div>
-    
+
+    <footer>
+        <div id="credit">
+            <img src="images/icon.png" class="swell">
+            <div class="grow">
+                <p>Made by <a href="https://github.com/cahdmus">@Cahdmus</a></p>
+            </div>
+        </div>
+    </footer>
 </body>
+
 </html>
