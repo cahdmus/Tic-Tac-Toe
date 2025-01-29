@@ -1,0 +1,33 @@
+:root {
+    --background-color: hsl(38, 66%, 83%);
+    --secondary-background-color: hsl(35, 94%, 94%);
+    --accent-color: hsl(23, 78%, 55%);
+    --secondary-accent-color: hsl(40, 48%, 53%);
+    --font-color: hsl(86, 33%, 19%);
+}
+
+body {
+    background-color: var(--secondary-background-color);
+}
+
+.box {
+    width: 20%;
+    margin: auto;
+    /* border: solid 1px red; */
+    display: flex;
+    flex-direction: column;
+}
+
+button {
+    border: none;
+    background-color: var(--secondary-accent-color);
+    color: var(--secondary-background-color);
+    padding: .5rem 1rem;
+    font-family: Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+    border-radius: 15px;
+}
+
+#btns {
+    margin: auto;
+}

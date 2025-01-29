@@ -3,6 +3,7 @@ const PlayGame = (function () {
     // Creating the board
     const gameboard = {
 
+        boardSize: 3, // I plan on making the board resizable one day
         tiles: [],
         init() {
             this.cacheDom();
@@ -13,18 +14,20 @@ const PlayGame = (function () {
             this.gameboard = document.querySelector('#gameboard');
             this.board = document.querySelector('#board');
             this.boardTiles = document.querySelectorAll('.tile');
-            this.boardSizeBtn = document.querySelector('#setBoardSize');
-            this.input = document.querySelector('input');
-            this.resetBtn = document.querySelector('#resetBtn');
+
+            // this.boardSizeinput = document.querySelector('#boardSize').querySelector('input');
             this.buttons = document.querySelectorAll('button');
+
+            this.turnDisplay = document.querySelector('#turnDisplay').querySelector('span');
+
             this.player1DisplayName = document.querySelector('#player1').querySelector('h2');
             this.player1DisplayScore = document.querySelector('#player1').querySelector('span');
             this.player2DisplayName = document.querySelector('#player2').querySelector('h2');
             this.player2DisplayScore = document.querySelector('#player2').querySelector('span');
         },
         getBoardSize() {
-            return (this.input.value.length === 0) ? this.input.placeholder
-                : this.input.value;
+            return this.boardSize;
+            // return (this.boardSizeinput.value.length === 0) ? 3 : this.boardSizeinput.value;
         },
         setGridSize(boardSize) {
             // set max of 12 or something
@@ -77,13 +80,15 @@ const PlayGame = (function () {
         },
         createTiles() {
             this.tiles.forEach((tile) => {
-                let owner = tile.owner;
                 let id = tile.id;
 
                 tile = document.createElement('div');
+                token = document.createElement('img');
                 tile.id = id;
                 tile.classList.add('tile');
-                tile.innerHTML = owner;
+                tile.classList.add('swell');
+                token.src = 'images/tokens/token0.svg';
+                tile.appendChild(token);
                 this.board.appendChild(tile);
             })
         },
@@ -109,12 +114,8 @@ const PlayGame = (function () {
             this.board.innerHTML = '';
         },
         reset() {
-            this.buttons.forEach((button) => {
-                button.addEventListener('click', () => {
-                    this.removeTiles();
-                    startGame.init()
-                })
-            })
+            this.removeTiles();
+            this.createBoard();
         }
     }
 
@@ -123,21 +124,16 @@ const PlayGame = (function () {
     const players = {
         players: [],
         tokens: [
-            { name: "X" },
-            { name: "O" } // isAvailable: true / for later
+            { src: 'images/tokens/token1b.svg', id: 'player1'},
+            { src: 'images/tokens/token12b.svg', id: 'player2' } // isAvailable: true / for later
         ],
-        init() {
-            this.players.push(this.createPlayer());
-            this.players.push(this.createPlayer());
+        init(player1Name, player2Name) {
+            this.players.push(this.createPlayer(player1Name));
+            this.players.push(this.createPlayer(player2Name));
             this.displayPlayers();
         },
-        createPlayer() {
-            return { name: this.getPlayerName(), token: this.getPlayerToken(), score: 0 }
-        },
-        getPlayerName() {
-            // Because I can't be bothered to fill it every time
-            return (this.players.length === 0) ? "Kylo" : "Ren";
-            // return prompt('Name of Player','type name')
+        createPlayer(playerName) {
+            return { name: playerName, token: this.getPlayerToken(), score: 0 }
         },
         getPlayerToken() {
             // At some point players will be able to pick their token
@@ -149,6 +145,10 @@ const PlayGame = (function () {
             gameboard.player1DisplayScore.textContent = this.players[0].score;
             gameboard.player2DisplayName.textContent = this.players[1].name;
             gameboard.player2DisplayScore.textContent = this.players[1].score;
+        },
+        reset() {
+            this.players = [];
+            startGame.init();
         }
     }
 
@@ -161,7 +161,7 @@ const PlayGame = (function () {
             return (this.checkLine('row', tile, player) === true ||
                 this.checkLine('col', tile, player) === true ||
                 this.checkLine('diag1', tile, player) === true ||
-                this.checkLine('diag2', tile, player) === true) ? player : "";
+                this.checkLine('diag2', tile, player) === true) ? player : '';
         },
         getLine(line, tile) {
             switch (line) {
@@ -181,8 +181,9 @@ const PlayGame = (function () {
 
             this.board.forEach((tile) => {
                 let tileLine = this.getLine(line, tile);
+
                 if (tileLine === playerLine) {
-                    if (tile.owner === player) {
+                    if (tile.owner === player && tileLine != false) {
                         streak++;
                     }
                 }
@@ -194,7 +195,7 @@ const PlayGame = (function () {
 
     // Rules of a Turn 
     const playTurn = {
-        players: players.players,
+        players,
         board,
         turn: 0,
         winnerName: '',
@@ -207,36 +208,102 @@ const PlayGame = (function () {
             return (isOdd(this.turn) === false) ? this.players[0] : this.players[1];
         },
         placeToken(tile, turn) {
-            const player = this.getTurnPlayerName(turn);
-            const playerName = player.name;
+            let player = this.getTurnPlayerName(turn);
+            let playerName = player.name;
+            let playerToken = player.token.src;
             const index = tile.id - 1;
+
 
             if (tile.isAvailable === true) {
                 tile.owner = playerName;
                 tile.isAvailable = false;
-                gameboard.boardTiles[index].innerHTML = playerName;
+                gameboard.boardTiles[index].innerHTML = `<img src="${playerToken}">`;
                 this.winnerName = checkWinner.init(playerName, tile);
-                this.announceWinner();
+                this.announceWinner(player);
                 this.turn++;
             }
         },
         getPlayerChoice(turn) {
             gameboard.cacheDom();
+            this.displayTurnPlayer(turn);
             gameboard.boardTiles.forEach((tile) => {
                 tile.addEventListener('click', () => {
                     this.placeToken(this.board[tile.id - 1], turn);
+                    this.displayTurnPlayer(turn);
                 })
             })
         },
-        announceWinner(turnPayer) {
-            // const playerScore = turnPlayer.score;
-            // playerScore++;
-            let message = `the winner is ${this.winnerName}`;
-            return (this.winnerName.length > 0) ? alert(message) : false;
+        displayTurnPlayer(turn) {
+            gameboard.cacheDom();
+            let turnPlayer = this.getTurnPlayerName(turn);
+            gameboard.turnDisplay.removeAttribute('class');
+            gameboard.turnDisplay.classList.add(turnPlayer.token.id);
+            gameboard.turnDisplay.innerHTML = turnPlayer.name;
+        },
+        announceWinner(player) {
+            let message;
+            let isTie = this.checkForTie();
+
+            if (this.winnerName.length > 0 && isTie === false) {
+                player.score++;
+                message = `The winner is <span>${this.winnerName}</span>`;
+                this.createEndGamePopUp(message);
+                players.displayPlayers();
+            } else if (isTie === true) {
+                message = `It's a <span>tie</span>`;
+                this.createEndGamePopUp(message);
+            }
+        },
+        checkForTie() {
+            let board = gameboard.tiles;
+            let tie = 0;
+
+            board.forEach((tile) => {
+                if (tile.isAvailable === false) {
+                    tie++;
+                }
+            })
+
+            return (tie === 9) ? true : false;
+        },
+        createEndGamePopUp(message) {
+            overlay = document.createElement('div');
+            overlay.classList.add('overlay');
+            popUp = document.createElement('div');
+            popUp.classList.add('box');
+            popUp.id = 'popup';
+
+            title = document.createElement('h1');
+            title.innerHTML = message;
+
+            closeBtn = document.createElement('button');
+            closeBtn.id = 'closeBtn';
+            closeBtn.textContent = 'close';
+
+            restartBtn = document.createElement('button');
+            restartBtn.id = 'restartGame';
+            restartBtn.textContent = 'Play again';
+
+            popUp.appendChild(closeBtn);
+            popUp.appendChild(title);
+            popUp.appendChild(restartBtn);
+
+            document.body.appendChild(popUp);
+            document.body.appendChild(overlay);
+
+            closeBtn.addEventListener('click', () => {
+                startGame.removePopUp();
+            })
+
+            restartBtn.addEventListener('click', () => {
+                startGame.removePopUp();
+                startGame.play();
+            })
+
         },
         reset() {
             this.board = gameboard.tiles;
-
+            this.players = players.players;
             this.turn = 0;
             this.winnerName = '';
         }
@@ -246,12 +313,110 @@ const PlayGame = (function () {
     // Playing the game
     const startGame = {
         init() {
+            this.createPlayerPopUp();
+            btn.addEventListener('click', () => {
+                let player1Name = this.getPlayerInfos().player1;
+                let player2Name = this.getPlayerInfos().player2;
+
+                if (player1Name.length <= 0 || player2Name.length <= 0) {
+                    alert(`Invalid names (they're too short)`)
+                } else if (player1Name === player2Name) {
+                    alert(`Those are the same names... Don't play me !`)
+                } else {
+                    this.removePopUp();
+                    players.init(player1Name, player2Name);
+                    this.play();
+                }
+            });
+            this.reset();
+        },
+        play() {
             gameboard.init();
+            gameboard.gameboard.classList.remove('hidden');
             playTurn.init();
+        },
+        createPlayerPopUp() {
+            overlay = document.createElement('div');
+            overlay.classList.add('overlay');
+            popUp = document.createElement('div');
+            popUp.classList.add('box');
+            popUp.id = 'popup';
+
+            title = document.createElement('h1');
+            title.innerHTML = 'Create <span>players</span>';
+
+            form = document.createElement('form');
+
+            playersInfo = document.createElement('div')
+            playersInfo.classList.add('playersInfo');
+
+            let fieldsets = [
+                { tag: 'player1Name', text: 'Player One' },
+                { tag: 'player2Name', text: 'Player Two' }
+            ]
+            fieldsets.forEach((fieldsetTag) => {
+                fieldset = document.createElement('fieldset');
+
+                label = document.createElement('label');
+                label.htmlFor = fieldsetTag.tag;
+                label.innerHTML = fieldsetTag.text;
+                fieldset.appendChild(label);
+
+                input = document.createElement('input');
+                input.type = 'text';
+                input.id = fieldsetTag.tag;
+                input.name = fieldsetTag.tag;
+                input.value = fieldsetTag.tag;
+                input.placeholder = 'Enter name';
+
+                fieldset.appendChild(input);
+                playersInfo.appendChild(fieldset);
+            })
+
+            btn = document.createElement('button');
+            btn.type = 'submit';
+            btn.id = 'startGame';
+            btn.textContent = 'Start Game';
+
+            form.appendChild(playersInfo);
+            form.appendChild(btn);
+            popUp.appendChild(title);
+            popUp.appendChild(form);
+
+            document.body.appendChild(popUp);
+            document.body.appendChild(overlay);
+        },
+        removePopUp() {
+            document.body.removeChild(popUp);
+            document.body.removeChild(overlay);
+        },
+        getPlayerInfos() {
+            return {
+                player1: document.getElementById('player1Name').value,
+                player2: document.getElementById('player2Name').value
+            }
+        },
+        reset() {
+            gameboard.cacheDom();
+            gameboard.buttons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    switch (button.id) {
+                        // case 'boardSizeBtn':
+                        //     gameboard.reset();
+                        //     break;
+                        case 'resetBoardBtn':
+                            gameboard.reset();
+                            // but don't resize
+                            break;
+                        case 'resetPlayersBtn':
+                            players.reset();
+                            break;
+                    }
+                    this.play();
+                })
+            })
         }
     }
 
-    players.init();
     startGame.init();
-
 })();

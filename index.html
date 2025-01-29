@@ -16,29 +16,23 @@
         <h1>Tic <span>Tac</span> Toe</h1>
     </header>
 
-    <!-- <div id="popup" class="box">
-        <h1>Player One</h1>
-        <p>Enter name</p>
-        <input placeholder="name" type="text">
-        <p>Select a token</p>
-        <button id="setBoardSize">Confirm player</button>
-    </div> -->
-    <!-- <div class="overlay"></div> -->
-
-    <div id="gameboard">
-        <div id="boardSize">
+    <div id="gameboard" class="hidden">
+        <!-- <div id="boardSize">
             <input placeholder="3" type="text">
-            <button id="setBoardSize">Set Size</button>
+            <button id="boardSizeBtn">Set Size</button>
+        </div> -->
+        <div id="turnDisplay">
+            <h2><span>uc</span>'s turn</h2>
         </div>
 
         <main>
             <div id="player1" class="box">
                 <div class="playerToken">
-                    <img src="images/tokens/token (12).svg">
+                    <img src="images/tokens/token1.svg">
                 </div>
                 <div class="playerInfo">
                     <h2>Player Name</h2>
-                    <p>Score - <span>00</span></p>
+                    <p>Score - <span>0</span></p>
                 </div>
             </div>
 
@@ -46,22 +40,25 @@
 
             <div id="player2" class="box">
                 <div class="playerToken">
-                    <img src="images/tokens/token (1).svg">
+                    <img src="images/tokens/token12.svg">
                 </div>
                 <div class="playerInfo">
                     <h2>Player Name</h2>
-                    <p>Score - <span>00</span></p>
+                    <p>Score - <span>0</span></p>
                 </div>
             </div>
         </main>
 
-        <button id="resetBtn">Reset</button>
+        <div>
+            <button id="resetBoardBtn">Clear board</button>
+            <button id="resetPlayersBtn">Reset players</button>
+        </div>
     </div>
 
     <footer>
         <div id="credit">
             <img src="images/icon.png" class="swell">
-            <div class="grow">
+            <div class="desc">
                 <p>Made by <a href="https://github.com/cahdmus">@Cahdmus</a></p>
             </div>
         </div>
