@@ -366,7 +366,6 @@ const PlayGame = (function () {
                 input.type = 'text';
                 input.id = fieldsetTag.tag;
                 input.name = fieldsetTag.tag;
-                input.value = fieldsetTag.tag;
                 input.placeholder = 'Enter name';
 
                 fieldset.appendChild(input);
